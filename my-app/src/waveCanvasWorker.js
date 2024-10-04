@@ -100,13 +100,10 @@ function smoothAverages(averages, canvasWidth, k) {
 
     let startIndex = 0;
     let endIndex = middleIndexes[0];
-
     let startValue = 0;
     let endValue = averages[0];
-
     let difference = endValue - startValue;
     let distance = endIndex - startIndex;
-
     let smoothing = difference / distance;
 
     for (let j = 0; j < distance; j++) { 
@@ -119,13 +116,10 @@ function smoothAverages(averages, canvasWidth, k) {
 
         const startIndex = middleIndexes[i];
         const endIndex = middleIndexes[i + 1];
-
         const startValue = averages[i];
         const endValue = averages[i + 1];
-
         const difference = endValue - startValue;
         const distance = endIndex - startIndex;
-
         const smoothing = difference / distance;
 
         for (let j = 0; j < distance; j++) { 
@@ -137,13 +131,10 @@ function smoothAverages(averages, canvasWidth, k) {
     // from last median to edge
     startIndex = middleIndexes[middleIndexes.length - 1];
     endIndex = canvasWidth;
-
     startValue = averages[averages.length - 1];
     endValue = 0;
-
     difference = endValue - startValue;
     distance = endIndex - startIndex;
-
     smoothing = difference / distance;
 
     for (let j = 0; j < distance; j++) { 

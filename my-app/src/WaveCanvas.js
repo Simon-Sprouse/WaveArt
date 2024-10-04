@@ -34,6 +34,10 @@ function WaveCanvas({ image, bandHeight, maxAmp, frequency, stroke, k }) {
     }, []);
 
 
+    useEffect(() => {
+        getAmplitudes();
+    })
+
 
 
     function displayImage() { 
@@ -52,7 +56,7 @@ function WaveCanvas({ image, bandHeight, maxAmp, frequency, stroke, k }) {
 
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-
+                getAmplitudes();
 
             }
         }
@@ -61,16 +65,16 @@ function WaveCanvas({ image, bandHeight, maxAmp, frequency, stroke, k }) {
     function resetCanvas() {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        // gradient.addColorStop(0, "purple");
-        // gradient.addColorStop(0.5, "violet");
-        // gradient.addColorStop(1, "pink");
-
-        // ctx.fillStyle = gradient;
+        // ctx.fillStyle = "green";
         // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        gradient.addColorStop(0, "purple");
+        gradient.addColorStop(0.5, "violet");
+        gradient.addColorStop(1, "pink");
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
     }
@@ -126,16 +130,13 @@ function WaveCanvas({ image, bandHeight, maxAmp, frequency, stroke, k }) {
     })
 
 
-    useEffect(() => {
-        resetCanvas();
-        getAmplitudes();
-    })
+
 
 
 
     return (
         <>
-          <canvas ref={canvasRef} height="400" width="800"></canvas>
+          <canvas ref={canvasRef} height={"400"} width="800"></canvas>
         </>
     )
 }
