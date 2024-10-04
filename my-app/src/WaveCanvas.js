@@ -11,25 +11,25 @@ function WaveCanvas({ image }) {
 
 
 
-    function drawWave() { 
+    function drawWave(amplitudes) { 
 
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
 
-        let amplitude = 0.1;
-        const frequency = 0.5;
 
-        const y_offset = 200;
+        const frequency = 0.1;
+
+        const y_offset = Math.floor(canvas.height / 2);
 
         ctx.beginPath() 
         ctx.strokeStyle = "white";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 10;
 
         for (let x = 0; x < canvas.width; x++) { 
-            const y = amplitude * Math.sin(frequency * x) + y_offset;
+            const y = amplitudes[x] * Math.sin(frequency * x) + y_offset;
             
-            amplitude += 0.0025
+
 
 
             if (x == 0) { 
@@ -60,10 +60,7 @@ function WaveCanvas({ image }) {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
 
-                // TODO change this to a new function 
-                const imageData = ctx.getImageData(0, 0, canvas.width, bandHeight);
-                const averages = calculateGrayscaleAvg(imageData.data, canvas.width, bandHeight, k);
-                smoothAverages(averages);
+
             }
         }
     }
@@ -76,6 +73,36 @@ function WaveCanvas({ image }) {
     }
 
 
+    function getAmplitudes() { 
+
+
+
+        if (image) { 
+
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            const img = new Image();
+            img.src = image;
+            img.onload = () => { 
+
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, bandHeight);
+                const averages = calculateGrayscaleAvg(imageData.data, canvas.width, bandHeight, k);
+                const amplitudes = smoothAverages(averages);
+                
+
+                drawWave(amplitudes);
+
+
+
+            }
+        }
+    }
 
 
     function calculateGrayscaleAvg(data, canvasWidth, bandHeight) {
@@ -199,13 +226,16 @@ function WaveCanvas({ image }) {
 
         function handleKeyDown(event) { 
             if (event.key == "Enter") { 
-                drawWave();
+                // drawWave();
             }
             else if (event.key == " ") { 
                 resetCanvas();
             }
             else if (event.key == "1") { 
                 drawImage();
+            }
+            else if (event.key == "a") { 
+                getAmplitudes();
             }
         }
 
