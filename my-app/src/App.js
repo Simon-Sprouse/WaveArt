@@ -1,12 +1,12 @@
 import './App.css';
-import WaveCanvas from './WaveCanvas';
+import Uploader from './Uploader';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
         <p>Wave Art</p>
-        <WaveCanvas />
+        <Uploader />
       </header>
     </div>
   );

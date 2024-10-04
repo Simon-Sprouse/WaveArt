@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 
 
-function WaveCanvas() { 
+function WaveCanvas({ image }) { 
 
     const canvasRef = useRef(null);
 
@@ -14,7 +14,7 @@ function WaveCanvas() {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
 
-        const amplitude = 50;
+        let amplitude = 50;
         const frequency = 0.1;
 
         const y_offset = 200;
@@ -25,6 +25,7 @@ function WaveCanvas() {
 
         for (let x = 0; x < canvas.width; x++) { 
             const y = amplitude * Math.sin(frequency * x) + y_offset;
+            amplitude += 0.1;
             if (x == 0) { 
                 ctx.moveTo(x, y);
             }
@@ -64,8 +65,27 @@ function WaveCanvas() {
         })
     })
 
+    // On Mount
     useEffect(() => { 
         resetCanvas();
+
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+
+        if (image) { 
+
+            const img = new Image();
+            img.src = image;
+            img.onload = () => { 
+
+
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+        }
+
     }, []);
 
     return (
