@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import WaveCanvas from './WaveCanvas';
+import Controller from './Controller';
 
 function Uploader() { 
 
@@ -46,7 +46,7 @@ function Uploader() {
     return (
         <>
             <input type="file" onChange={handleUpload} accept="image/*" />
-            {image && <WaveCanvas key={image} image={image} />}
+            {image && <Controller key={image} image={image} />}
         </>
     )
 }

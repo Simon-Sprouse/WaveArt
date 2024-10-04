@@ -2,11 +2,11 @@ import { useRef, useEffect } from 'react'
 
 
 
-function WaveCanvas({ image }) { 
+function WaveCanvas({ image, bandHeight }) { 
 
     const canvasRef = useRef(null);
 
-    const bandHeight = 10;
+
     const k = 100;
     const maxAmp = 10;
     const frequency = 0.5;
@@ -71,24 +71,22 @@ function WaveCanvas({ image }) {
     function resetCanvas() {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
-        // ctx.fillStyle = "white";
-        // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        gradient.addColorStop(0, "purple");
-        gradient.addColorStop(0.5, "violet");
-        gradient.addColorStop(1, "pink");
-
-        ctx.fillStyle = gradient;
+        ctx.fillStyle = "white";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        // gradient.addColorStop(0, "purple");
+        // gradient.addColorStop(0.5, "violet");
+        // gradient.addColorStop(1, "pink");
+
+        // ctx.fillStyle = gradient;
+        // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
     }
 
 
     function getAmplitudes() { 
-
-
 
         if (image) { 
 
@@ -115,10 +113,6 @@ function WaveCanvas({ image }) {
 
                     drawWave(normalized, y_offset);
                 }
-
-                
-
-
 
             }
         }
@@ -229,14 +223,6 @@ function WaveCanvas({ image }) {
         }
 
 
-
-
-
-
-
-        console.log(middleIndexes);
-        console.log(amplitudeArray);
-
         return amplitudeArray;
     }
 
@@ -272,11 +258,17 @@ function WaveCanvas({ image }) {
         })
     })
 
+
+    useEffect(() => {
+        resetCanvas();
+        getAmplitudes();
+    })
+
     // On Mount
     useEffect(() => { 
         resetCanvas();
         drawImage();
-        
+
 
     }, []);
 
