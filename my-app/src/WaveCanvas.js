@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import App from './App';
 
 
 function WaveCanvas({ image }) { 
@@ -61,8 +62,8 @@ function WaveCanvas({ image }) {
 
                 // TODO change this to a new function 
                 const imageData = ctx.getImageData(0, 0, canvas.width, bandHeight);
-                calculateGrayscaleAvg(imageData.data, canvas.width, bandHeight, k);
-
+                const averages = calculateGrayscaleAvg(imageData.data, canvas.width, bandHeight, k);
+                smoothAverages(averages);
             }
         }
     }
@@ -110,6 +111,87 @@ function WaveCanvas({ image }) {
         return averages;
     }
 
+
+    function smoothAverages(averages) { 
+
+        const canvasWidth = canvasRef.current.width;
+        const chunkWidth = Math.floor(canvasWidth / k);
+
+        const middleIndexes = new Array(averages.length).fill(0);
+
+        for (let i = 0; i < averages.length; i++) { 
+            const middleOfChunk = (i * chunkWidth) + Math.floor(chunkWidth / 2);
+            middleIndexes[i] = middleOfChunk;
+        }
+
+        const amplitudeArray = new Array(canvasWidth).fill(0);
+
+
+        // from edge to first median
+
+        let startIndex = 0;
+        let endIndex = middleIndexes[0];
+
+        let startValue = 0;
+        let endValue = averages[0];
+
+        let difference = endValue - startValue;
+        let distance = endIndex - startIndex;
+
+        let smoothing = difference / distance;
+
+        for (let j = 0; j < distance; j++) { 
+            amplitudeArray[startIndex + j] = startValue + smoothing * j;
+        }
+
+
+        // from first median to next median
+        for (let i = 0; i < middleIndexes.length - 1; i++) { 
+
+            const startIndex = middleIndexes[i];
+            const endIndex = middleIndexes[i + 1];
+
+            const startValue = averages[i];
+            const endValue = averages[i + 1];
+
+            const difference = endValue - startValue;
+            const distance = endIndex - startIndex;
+
+            const smoothing = difference / distance;
+
+            for (let j = 0; j < distance; j++) { 
+                amplitudeArray[startIndex + j] = startValue + smoothing * j;
+            }
+
+        }
+
+        // from last median to edge
+        startIndex = middleIndexes[middleIndexes.length - 1];
+        endIndex = canvasWidth;
+
+        startValue = averages[averages.length - 1];
+        endValue = 0;
+
+        difference = endValue - startValue;
+        distance = endIndex - startIndex;
+
+        smoothing = difference / distance;
+
+        for (let j = 0; j < distance; j++) { 
+            amplitudeArray[startIndex + j] = startValue + smoothing * j;
+        }
+
+
+
+
+
+
+
+        console.log(middleIndexes);
+        console.log(amplitudeArray);
+
+        return amplitudeArray;
+    }
 
 
 
