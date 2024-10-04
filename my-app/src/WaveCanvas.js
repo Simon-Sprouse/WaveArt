@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import App from './App';
+
 
 
 function WaveCanvas({ image }) { 
@@ -8,6 +8,10 @@ function WaveCanvas({ image }) {
 
     const bandHeight = 10;
     const k = 100;
+    const maxAmp = 10;
+    const frequency = 0.5;
+    const stroke = 2;
+
 
 
 
@@ -18,12 +22,12 @@ function WaveCanvas({ image }) {
         const ctx = canvas.getContext("2d");
 
 
-        const frequency = 0.5;
+        
 
 
         ctx.beginPath() 
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = stroke;
 
         for (let x = 0; x < canvas.width; x++) { 
             const y = amplitudes[x] * Math.sin(frequency * x) + y_offset;
@@ -67,8 +71,18 @@ function WaveCanvas({ image }) {
     function resetCanvas() {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "black";
+        // ctx.fillStyle = "white";
+        // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        gradient.addColorStop(0, "purple");
+        gradient.addColorStop(0.5, "violet");
+        gradient.addColorStop(1, "pink");
+
+        ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
     }
 
 
@@ -227,7 +241,6 @@ function WaveCanvas({ image }) {
     }
 
     function normalizeAmplitudes(amplitudes) { 
-        const maxAmp = bandHeight / 2;
         const scale = (maxAmp / 255);
         return amplitudes.map(point => maxAmp - (scale * point));
     }
