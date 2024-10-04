@@ -6,25 +6,24 @@ function WaveCanvas({ image }) {
 
     const canvasRef = useRef(null);
 
-    const bandHeight = 20;
-    const k = 10;
+    const bandHeight = 10;
+    const k = 100;
 
 
 
-    function drawWave(amplitudes) { 
+    function drawWave(amplitudes, y_offset) { 
 
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
 
 
-        const frequency = 0.1;
+        const frequency = 0.5;
 
-        const y_offset = Math.floor(canvas.height / 2);
 
         ctx.beginPath() 
         ctx.strokeStyle = "white";
-        ctx.lineWidth = 10;
+        ctx.lineWidth = 2;
 
         for (let x = 0; x < canvas.width; x++) { 
             const y = amplitudes[x] * Math.sin(frequency * x) + y_offset;
@@ -91,12 +90,19 @@ function WaveCanvas({ image }) {
 
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                const imageData = ctx.getImageData(0, 0, canvas.width, bandHeight);
-                const averages = calculateGrayscaleAvg(imageData.data, canvas.width, bandHeight, k);
-                const amplitudes = smoothAverages(averages);
-                
+                const numberOfWaves = Math.floor(canvas.height / bandHeight);
+                for (let i = 0; i < numberOfWaves; i++) { 
+                    const imageData = ctx.getImageData(0, i * bandHeight, canvas.width, (i + 1) * bandHeight);
+                    const averages = calculateGrayscaleAvg(imageData.data, canvas.width, k);
+                    const amplitudes = smoothAverages(averages);
+                    const normalized = normalizeAmplitudes(amplitudes);
+                    
+                    const y_offset = (bandHeight/2) + (i*bandHeight)
 
-                drawWave(amplitudes);
+                    drawWave(normalized, y_offset);
+                }
+
+                
 
 
 
@@ -105,7 +111,7 @@ function WaveCanvas({ image }) {
     }
 
 
-    function calculateGrayscaleAvg(data, canvasWidth, bandHeight) {
+    function calculateGrayscaleAvg(data, canvasWidth) {
         const chunkWidth = Math.floor(canvasWidth / k);
         const averages = new Array(k).fill(0);
         const counts = new Array(k).fill(0);
@@ -220,6 +226,13 @@ function WaveCanvas({ image }) {
         return amplitudeArray;
     }
 
+    function normalizeAmplitudes(amplitudes) { 
+        const maxAmp = bandHeight / 2;
+        const scale = (maxAmp / 255);
+        return amplitudes.map(point => maxAmp - (scale * point));
+    }
+
+
 
 
     useEffect(() => {
@@ -283,6 +296,17 @@ Then I need to use a smoothing function to create a continuous flow
 Then I need the drawWave function to use this flow to set amplitude
 
 
+
+
+Ok so here's what the fuck I'm doing next: 
+
+So right now the amplitudes array contains amplitudes that are backwards and not normalized. 
+I need to normalize and flip these values. 
+The max amplitude needs to be half of the bandheight. 
+Therefore all values in the amplitude array *= (max amp / 255)
+
+To invert the amplitude array: 
+For all values in amplitude array: 10 - value
 
 
 
